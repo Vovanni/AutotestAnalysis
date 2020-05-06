@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,17 @@ namespace AutotestAnalysis.Models
 
         public float Fitness { get; }
 
+        private string _name;
+
+        public string Name => _name ?? string.Join("\n", Childs.Select(c => c.Name.ToString()));
+
         private string _message;
         public string Message => _message ?? string.Join("\n", Childs.Select(c => c.Message.ToString()));
 
-        public Cluster(string product, string platform, string message, Dictionary<int, int> tags)
+        public Cluster(string product, string name, string platform, string message, Dictionary<int, int> tags)
         {
-            _message = $"{product}-{platform}\n{message}";
+            _name = $"{product}-{name}-{platform}";
+            _message = message;//$"{product}-{platform}\n{message}";
             Tags = new Dictionary<int, float>();
             foreach (var tag in tags)
             {
@@ -78,6 +84,25 @@ namespace AutotestAnalysis.Models
             return new Cluster(clusters).Fitness;
         }
 
+        public Dendrogram GetDendrogram()
+        {
+            var dendrogram = new Dendrogram { Name = "" };
+
+            if (Childs == null || !Childs.Any())
+            {
+                dendrogram.Name = Name;
+                return dendrogram;
+            }
+
+            dendrogram.Children = new List<Dendrogram>();
+            foreach (var child in Childs)
+            {
+                dendrogram.Children.Add(child.GetDendrogram());
+            }
+
+            return dendrogram;
+        }
+
         #region Overrides
 
         public static bool operator !=(Cluster a, Cluster b)
@@ -109,7 +134,7 @@ namespace AutotestAnalysis.Models
 
         public override string ToString()
         {
-            return $"Message: '{Message}'\nFitness: '{Fitness}'\nTags: '{string.Join(", ", Tags.Select(t => $"{t.Key}: {t.Value}"))}'";
+            return $"Name '{Name}'\nMessage: '{Message}'\nFitness: '{Fitness}'\nTags: '{string.Join(", ", Tags.Select(t => $"{t.Key}: {t.Value}"))}'";
         }
 
         #endregion

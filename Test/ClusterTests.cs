@@ -11,7 +11,7 @@ namespace Test
     [TestClass]
     public class ClusterTests
     {
-        private Cluster Cluster1 = new Cluster("A", "win-7", "message A", new Dictionary<int, int>
+        private Cluster Cluster1 = new Cluster("A", "A", "win-7", "message A", new Dictionary<int, int>
         {
             { 0, 1 },
             { 1, 2 },
@@ -19,7 +19,7 @@ namespace Test
             { 4, 4 }
         });
 
-        private Cluster Cluster2 = new Cluster("A", "win-7", "message A", new Dictionary<int, int>
+        private Cluster Cluster2 = new Cluster("A", "A", "win-7", "message A", new Dictionary<int, int>
         {
             { 0, 1 },
             { 1, 1 },

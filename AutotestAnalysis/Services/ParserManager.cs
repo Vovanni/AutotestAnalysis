@@ -9,8 +9,8 @@ using System.Text.RegularExpressions;
 
 namespace AutotestAnalysis.Services
 {
-    public class ParserManager
-    {
+    public class ParserManager : IParserManager
+	{
 
 		private string[] _exclusions = new[]
 			{
@@ -75,21 +75,23 @@ namespace AutotestAnalysis.Services
 			//ParseTestResults(@"D:\User\Desktop\response_1588674070715.json");
 		}
 
-        public ParsedTestResults ParseTestResults (string jsonPath)
+        public ParsedTestResults ParseTestResults (JArray sessions)
         {
 			var clusters = new List<Cluster>();
 
 			var i = 0;
 			var keys = new List<string>();
 			var keysDict = new Dictionary<int, string>();
-			var sessions = JArray.Parse(File.ReadAllText(jsonPath));
+			//var sessions = JArray.Parse(File.ReadAllText(jsonPath));
 
 			//var indexedMessages = new List<Dictionary<int, int>>();
 
 			foreach (var session in sessions)
 			{
+				var product = session["description"]["product"].ToString()+session["description"]["version"].ToString().Split('.').First();
 				foreach (var testResult in session["testResults"])
 				{
+					var name = testResult["name"].ToString();
 					foreach (var method in testResult["methods"])
 					{
 						foreach (var attempt in method["attempts"])
@@ -107,10 +109,11 @@ namespace AutotestAnalysis.Services
 							i++;
 
 							var cluster = new Cluster(
-								product: attempt["area"].ToString(), 
+								product: product,
+								name: name, 
 								platform: attempt["platform"].ToString(), 
 								message: message,
-								tags: indexedMessage);
+								tags: indexedMessage);;
 
 							var equalCluster = clusters.FirstOrDefault(c => c == cluster);
 

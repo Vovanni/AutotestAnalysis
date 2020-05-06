@@ -7,21 +7,14 @@ using System.Threading.Tasks;
 
 namespace AutotestAnalysis.Services
 {
-    public class HierarchicalClustering
+    public class HierarchicalClustering : IHierarchicalClustering
     {
-        private List<Cluster> _cluster;
-
         private List<Cluster> _outputCluster;
-        
-        public HierarchicalClustering(List<Cluster> cluster)
-        {
-            _cluster = cluster;
-            _outputCluster = new List<Cluster>();
-        }
+        public List<Cluster> Output => _outputCluster;
 
-        public void Compute(float fitness)
+        public HierarchicalClustering()
         {
-            Compute(fitness, _cluster);
+            _outputCluster = new List<Cluster>();
         }
 
         public void Compute(float fitness, IEnumerable<Cluster> clusters)
