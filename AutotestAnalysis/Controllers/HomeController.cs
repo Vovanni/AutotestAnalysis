@@ -29,9 +29,10 @@ namespace AutotestAnalysis.Controllers
             var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1588673196920.json"));
 
             var results = ParserManager.ParseTestResults(sessions);
-            HierarchicalClustering.Compute(0.3f, results.Clusters);
+            HierarchicalClustering.ComputeMultiple(0.4f, results.Clusters);
             Log.Debug("Tests count: {count}, cluster depth: {depth}", results.Clusters.Count, HierarchicalClustering.Output.Max(c => c.Depth));
-            ViewBag.Width = HierarchicalClustering.Output.Max(c => c.Depth) * 300;
+            
+            ViewBag.Width = HierarchicalClustering.Output.Max(c => c.Depth) * 300 + 460;
             ViewBag.Height = results.Clusters.Count * 30;
             ViewBag.Cluster = ClusterSerializer.Serialize(HierarchicalClustering.Output);
             return View();
