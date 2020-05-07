@@ -11,7 +11,7 @@
     }
 
     .node {
-        font: 10px sans-serif;
+        font: 14px sans-serif;
     }
 
     .link {
@@ -35,12 +35,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script>
         var clusters = {
-            "name": "base",
-            "children": @Html.Raw(@ViewBag.Cluster.ToString())
-            }
+                "name": "base",
+                "children": @Html.Raw(@ViewBag.Cluster.ToString()),
+            };
 
-        var width = 2550,
-            height = 5800;
+        var width = @ViewBag.Width,
+            height = @ViewBag.Height;
 
         var cluster = d3.layout.cluster().size([window.height, window.width - 450]);
 

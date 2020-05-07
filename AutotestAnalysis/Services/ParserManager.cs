@@ -110,7 +110,7 @@ namespace AutotestAnalysis.Services
 
 							var cluster = new Cluster(
 								product: product,
-								name: name, 
+								test: name, 
 								platform: attempt["platform"].ToString(), 
 								message: message,
 								tags: indexedMessage);;

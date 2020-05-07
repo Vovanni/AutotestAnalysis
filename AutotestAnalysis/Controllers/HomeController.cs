@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutotestAnalysis.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace AutotestAnalysis.Controllers
 {
@@ -28,7 +29,10 @@ namespace AutotestAnalysis.Controllers
             var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1588673196920.json"));
 
             var results = ParserManager.ParseTestResults(sessions);
-            HierarchicalClustering.Compute(0.5f, results.Clusters);
+            HierarchicalClustering.Compute(0.3f, results.Clusters);
+            Log.Debug("Tests count: {count}, cluster depth: {depth}", results.Clusters.Count, HierarchicalClustering.Output.Max(c => c.Depth));
+            ViewBag.Width = HierarchicalClustering.Output.Max(c => c.Depth) * 300;
+            ViewBag.Height = results.Clusters.Count * 30;
             ViewBag.Cluster = ClusterSerializer.Serialize(HierarchicalClustering.Output);
             return View();
         }

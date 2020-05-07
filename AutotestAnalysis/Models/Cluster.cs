@@ -3,6 +3,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Security.Policy;
 using System.Threading.Tasks;
 
@@ -19,17 +20,30 @@ namespace AutotestAnalysis.Models
 
         public float Fitness { get; }
 
-        private string _name;
+        public List<string> Products;
+        public string Product => string.Join("-", Products);
 
-        public string Name => _name ?? string.Join("\n", Childs.Select(c => c.Name.ToString()));
+        public List<string> Tests;
+        public string Test => string.Join("-", Tests);
+
+        public List<string> Platforms;
+        public string Platform => string.Join("-", Platforms);
+
+        public string Name => $"{Product}-{Test}-{Platform}";
 
         private string _message;
-        public string Message => _message ?? string.Join("\n", Childs.Select(c => c.Message.ToString()));
+        public string Message => _message ?? string.Join("\n", Childs.Select(c => c.Message));
 
-        public Cluster(string product, string name, string platform, string message, Dictionary<int, int> tags)
+        public int Depth => IsRoot ? 1 : Childs.Max(c => c.Depth) + 1;
+
+        public int Count => IsRoot ? 1 : Childs.Sum(c => c.Count);
+
+        public Cluster(string product, string test, string platform, string message, Dictionary<int, int> tags)
         {
-            _name = $"{product}-{name}-{platform}";
-            _message = message;//$"{product}-{platform}\n{message}";
+            Products = new List<string> { product };
+            Tests = new List<string> { test };
+            Platforms = new List<string> { platform };
+            _message = message;
             Tags = new Dictionary<int, float>();
             foreach (var tag in tags)
             {
@@ -46,9 +60,17 @@ namespace AutotestAnalysis.Models
             var tags = new Dictionary<int, float>();
             Fitness = 0;
 
+            var products = new List<string>();
+            var tests = new List<string>();
+            var platforms = new List<string>();
+
             //Считаем сумму
             foreach (var cluster in clustersToMerge)
             {
+                products.AddRange(cluster.Products);
+                tests.AddRange(cluster.Tests);
+                platforms.AddRange(cluster.Platforms);
+
                 foreach (var tag in cluster.Tags)
                 {
                     if (tags.ContainsKey(tag.Key))
@@ -74,9 +96,13 @@ namespace AutotestAnalysis.Models
                 foreach (var tag in Tags)
                 {
                     //Прибавляем к приспособляемости отклонение от среднего арифметического для каждого кластера
-                    Fitness += Math.Abs(tag.Value - (cluster.Tags.ContainsKey(tag.Key) ? cluster.Tags[tag.Key] : 0)) / Tags.Count;
+                    Fitness += Math.Abs(tag.Value - (cluster.Tags.ContainsKey(tag.Key) ? cluster.Tags[tag.Key] : 0)) / cluster.Tags.Count;
                 }
             }
+
+            Products = products.Distinct().ToList();
+            Tests = tests.Distinct().ToList();
+            Platforms = platforms.Distinct().ToList();
         }
 
         public static float ComputeFitness(List<Cluster> clusters)
@@ -86,11 +112,11 @@ namespace AutotestAnalysis.Models
 
         public Dendrogram GetDendrogram()
         {
-            var dendrogram = new Dendrogram { Name = "" };
+            var dendrogram = new Dendrogram { Name = Name };
 
             if (Childs == null || !Childs.Any())
             {
-                dendrogram.Name = Name;
+                //dendrogram.Name = Name;
                 return dendrogram;
             }
 

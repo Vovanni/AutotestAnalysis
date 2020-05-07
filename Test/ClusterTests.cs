@@ -78,5 +78,28 @@ namespace Test
             Assert.IsFalse(Cluster1.Equals(null));
             Assert.IsTrue(Cluster1.Equals(Cluster1));
         }
+
+        [TestMethod]
+        public void ClusterCount()
+        {
+            var cluster = new Cluster(new List<Cluster> { Cluster1, Cluster2, Cluster1, Cluster2 });
+            var cluster1 = new Cluster(new List<Cluster> { cluster, cluster });
+            var cluster2 = new Cluster(new List<Cluster> { cluster1, Cluster1, Cluster2 });
+            Assert.AreEqual(4, cluster.Count);
+            Assert.AreEqual(8, cluster1.Count);
+            Assert.AreEqual(10, cluster2.Count);
+        }
+
+        [TestMethod]
+        public void ClusterDepth()
+        {
+            var cluster = new Cluster(new List<Cluster> { Cluster1, Cluster2, Cluster1, Cluster2 });
+            var cluster1 = new Cluster(new List<Cluster> { cluster, cluster });
+            var cluster2 = new Cluster(new List<Cluster> { cluster1, Cluster1, Cluster2 });
+            Assert.AreEqual(1, Cluster1.Depth);
+            Assert.AreEqual(2, cluster.Depth);
+            Assert.AreEqual(3, cluster1.Depth);
+            Assert.AreEqual(4, cluster2.Depth);
+        }
     }
 }
