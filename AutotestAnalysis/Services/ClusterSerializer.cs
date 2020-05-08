@@ -14,7 +14,7 @@ namespace AutotestAnalysis.Services
         {
             var denrogram = clusters.Select(s => s.GetDendrogram());
             var serialized = JsonConvert.SerializeObject(denrogram);
-            Log.Debug("Serialized json: {json}", serialized);
+            Log.Verbose("Serialized json: {json}", serialized);
             return serialized;
         }
     }

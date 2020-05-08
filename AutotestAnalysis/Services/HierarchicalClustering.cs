@@ -97,7 +97,7 @@ namespace AutotestAnalysis.Services
                     }
                     else
                     {
-                        //Очистить буфер мерджа и добавить один элемент
+                        //Очистить буфер мержа и добавить один элемент
                         if (merge.Any())
                         {
                             merge.ForEach(s => clusterBuffer.Enqueue(s));

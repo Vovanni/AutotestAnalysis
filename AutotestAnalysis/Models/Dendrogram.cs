@@ -13,9 +13,5 @@ namespace AutotestAnalysis.Models
 
         [JsonProperty("children", NullValueHandling = NullValueHandling.Ignore)]
         public List<Dendrogram> Children { get; set; }
-
-        public Dendrogram()
-        {
-        }
     }
 }

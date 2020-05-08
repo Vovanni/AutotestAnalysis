@@ -70,11 +70,6 @@ namespace AutotestAnalysis.Services
 				"found"
 			};
 
-		public ParserManager()
-		{
-			//ParseTestResults(@"D:\User\Desktop\response_1588674070715.json");
-		}
-
         public ParsedTestResults ParseTestResults (JArray sessions)
         {
 			var clusters = new List<Cluster>();
@@ -82,9 +77,6 @@ namespace AutotestAnalysis.Services
 			var i = 0;
 			var keys = new List<string>();
 			var keysDict = new Dictionary<int, string>();
-			//var sessions = JArray.Parse(File.ReadAllText(jsonPath));
-
-			//var indexedMessages = new List<Dictionary<int, int>>();
 
 			foreach (var session in sessions)
 			{
@@ -120,13 +112,13 @@ namespace AutotestAnalysis.Services
 							if (equalCluster is null)
 							{
 								clusters.Add(cluster);
-								//Log.Debug("Add new cluster: {cluster}", cluster);
+								Log.Verbose("Add new cluster: {cluster}", cluster);
 							}
 							else
 							{
 								clusters.Remove(equalCluster);
 								var mergedCluster = new Cluster(new List<Cluster> { cluster, equalCluster });
-								//Log.Debug("Merge new cluster: {cluster}", mergedCluster);
+								Log.Verbose("Merge new cluster: {cluster}", mergedCluster);
 							}
 						}
 					}
@@ -162,7 +154,7 @@ namespace AutotestAnalysis.Services
 			}
 
 			Log.Debug("Updated keys: {keys}", keysDict);
-			Log.Debug("Clusters count: {count}, failed tests count: {all}", clusters.Count, i);
+			Log.Verbose("Clusters count: {count}, failed tests count: {all}", clusters.Count, i);
 			Log.Debug("Prepared clusters: {clusters}", string.Join("\n", string.Join("\n-----------------------\n", clusters)));
 
 			return new ParsedTestResults { Keys = keysDict, Clusters = clusters };

@@ -26,7 +26,7 @@ namespace AutotestAnalysis.Controllers
 
         public IActionResult Index()
         {
-            var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1588673196920.json"));
+            var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1588347928884.json"));
 
             var results = ParserManager.ParseTestResults(sessions);
             HierarchicalClustering.ComputeMultiple(0.4f, results.Clusters);
