@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -67,7 +66,12 @@ namespace AutotestAnalysis.Services
 				"all",
 				"as",
 				"beacause",
-				"found"
+				"found",
+				"actual",
+				"about",
+				"exe",
+				"pdf",
+				"rar"
 			};
 
         public ParsedTestResults ParseTestResults (JArray sessions)
@@ -95,8 +99,9 @@ namespace AutotestAnalysis.Services
 							}
 
 							var parsed = ParseMessage(message);
+							Log.Debug("Parsed message: {message}", parsed);
 
-							var indexedMessage = ParseKeys(ref keys, parsed);
+							var indexedMessage = Vectorize(ref keys, parsed);
 
 							i++;
 
@@ -105,7 +110,7 @@ namespace AutotestAnalysis.Services
 								test: name, 
 								platform: attempt["platform"].ToString(), 
 								message: message,
-								tags: indexedMessage);;
+								tags: indexedMessage);
 
 							var equalCluster = clusters.FirstOrDefault(c => c == cluster);
 
@@ -160,7 +165,7 @@ namespace AutotestAnalysis.Services
 			return new ParsedTestResults { Keys = keysDict, Clusters = clusters };
 		}
 
-		private Dictionary<int,int> ParseKeys(ref List<string> keys, string[] message)
+		private Dictionary<int,int> Vectorize(ref List<string> keys, string[] message)
 		{
 			var output = new Dictionary<int, int>(); 
 
@@ -178,12 +183,12 @@ namespace AutotestAnalysis.Services
 						output[id] = output[id] + 1;
 						continue;
 					}
-
-					output.Add(id, 1);
-					continue;
+				}
+				else
+				{
+					keys.Add(word);
 				}
 
-				keys.Add(word);
 				output.Add(id, 1);
 			}
 
@@ -207,9 +212,8 @@ namespace AutotestAnalysis.Services
 
         private string[] ParseMessage(string message)
         {
-			
 			var replacedString = Regex.Replace(message, @"MultiCheckAssert\s+failed.\s+|\*|\[|\]|\(|\)|\{|\}|:|=|\'|\!|,", "").ToLower();
-            var replacedString2 = Regex.Replace(replacedString, @"passed.*\n|failed|\#.*\d+\s+step\s+(\d|\.)+\s|\#\d+|\n|\\|/|\.|\?", " ").Replace("\"", "");
+            var replacedString2 = Regex.Replace(replacedString, @"passed.*\n|failed|\#.*\d+\s+step\s+(\d|\.)+\s|\#\d+|\n|\\s\+|\\s|\\|/|\.|\?", " ").Replace("\"", "");
 			var replacedString3 = Regex.Replace(replacedString2, @"\s+", " ").Trim();
             return replacedString3.Split(' ');
         }

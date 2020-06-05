@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AutotestAnalysis.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -26,13 +23,14 @@ namespace AutotestAnalysis.Controllers
 
         public IActionResult Index()
         {
-            var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1588347928884.json"));
+            var sessions = JArray.Parse(System.IO.File.ReadAllText(@"D:\User\Desktop\response_1589728162482.json"));
 
             var results = ParserManager.ParseTestResults(sessions);
-            HierarchicalClustering.ComputeMultiple(0.4f, results.Clusters);
-            Log.Debug("Tests count: {count}, cluster depth: {depth}", results.Clusters.Count, HierarchicalClustering.Output.Max(c => c.Depth));
-            
-            ViewBag.Width = HierarchicalClustering.Output.Max(c => c.Depth) * 300 + 460;
+            HierarchicalClustering.ComputeMultiple(0.5f, results.Clusters);
+            Log.Information("Tests count: {tcount}, clusters count {ccount}, cluster depth: {depth}", 
+                results.Clusters.Count, HierarchicalClustering.Output.Count, HierarchicalClustering.Output.Max(c => c.Depth));
+
+            ViewBag.Width = HierarchicalClustering.Output.Max(c => c.Depth) * 150 + 460;
             ViewBag.Height = results.Clusters.Count * 30;
             ViewBag.Cluster = ClusterSerializer.Serialize(HierarchicalClustering.Output);
             return View();

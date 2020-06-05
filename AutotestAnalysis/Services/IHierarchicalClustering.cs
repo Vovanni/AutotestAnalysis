@@ -1,8 +1,5 @@
 ﻿using AutotestAnalysis.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutotestAnalysis.Services
 {
@@ -11,5 +8,6 @@ namespace AutotestAnalysis.Services
         List<Cluster> Output { get; }
         void Compute(float fitness, IEnumerable<Cluster> clusters);
         void ComputeMultiple(float fitness, IEnumerable<Cluster> clusters);
+        void Clear();
     }
 }

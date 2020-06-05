@@ -1,9 +1,7 @@
 ﻿using AutotestAnalysis.Models;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutotestAnalysis.Services
 {
@@ -15,6 +13,11 @@ namespace AutotestAnalysis.Services
         public HierarchicalClustering()
         {
             _outputCluster = new List<Cluster>();
+        }
+
+        public void Clear()
+        {
+            _outputCluster.Clear();
         }
 
         public void Compute(float fitness, IEnumerable<Cluster> clusters)
@@ -57,9 +60,7 @@ namespace AutotestAnalysis.Services
             }
             else
             {
-                var mergedCluster = new Cluster(new List<Cluster> { a, b });
-                Log.Debug("Merged cluster: {cluster}", mergedCluster);
-                clusterBuffer.Enqueue(mergedCluster);
+                clusterBuffer.Enqueue(new Cluster(new List<Cluster> { a, b }));
             }
 
             Compute(fitness, clusterBuffer);
@@ -75,8 +76,8 @@ namespace AutotestAnalysis.Services
             var clusterQueue = new Queue<Cluster>(clusters);
             var clusterBuffer = new Queue<Cluster>();
 
-            Cluster a = clusterQueue.Dequeue();
-            List<Cluster> merge = new List<Cluster>();
+            var a = clusterQueue.Dequeue();
+            var merge = new List<Cluster>();
             var bestFitness = fitness;
             while (clusterQueue.Count > 0)
             {
@@ -97,12 +98,7 @@ namespace AutotestAnalysis.Services
                     }
                     else
                     {
-                        //Очистить буфер мержа и добавить один элемент
-                        if (merge.Any())
-                        {
-                            merge.ForEach(s => clusterBuffer.Enqueue(s));
-                        }
-
+                        merge.ForEach(s => clusterBuffer.Enqueue(s));
                         merge.Clear();
                         bestFitness = pairFitness;
                     }
@@ -122,9 +118,8 @@ namespace AutotestAnalysis.Services
             else
             {
                 merge.Add(a);
-                var mergedCluster = new Cluster(merge);
-                Log.Debug("Merged cluster: {cluster}", mergedCluster);
-                clusterBuffer.Enqueue(mergedCluster);
+                Log.Debug("Merged cluster: {cluster}", new Cluster(merge));
+                clusterBuffer.Enqueue(new Cluster(merge));
             }
 
             ComputeMultiple(fitness, clusterBuffer);

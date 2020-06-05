@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
-using System.Security.Policy;
-using System.Threading.Tasks;
 
 namespace AutotestAnalysis.Models
 {
@@ -49,7 +44,6 @@ namespace AutotestAnalysis.Models
             {
                 Tags.Add(tag.Key, tag.Value);
             }
-            //Log.Debug("Creating new cluster with message: {message}\ntags: {tags}", Message, Tags);
             Fitness = 0;
         }
 
@@ -96,7 +90,7 @@ namespace AutotestAnalysis.Models
                 foreach (var tag in Tags)
                 {
                     //Прибавляем к приспособляемости отклонение от среднего арифметического для каждого кластера
-                    Fitness += Math.Abs(tag.Value - (cluster.Tags.ContainsKey(tag.Key) ? cluster.Tags[tag.Key] : 0)) / cluster.Tags.Count;
+                    Fitness += Math.Abs(tag.Value - (cluster.Tags.ContainsKey(tag.Key) ? cluster.Tags[tag.Key] : 0)) / cluster.Tags.Count;// / cluster.Tags.Sum(s => s.Value);
                 }
             }
 
@@ -116,7 +110,6 @@ namespace AutotestAnalysis.Models
 
             if (Childs == null || !Childs.Any())
             {
-                //dendrogram.Name = Name;
                 return dendrogram;
             }
 
